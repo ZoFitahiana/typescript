@@ -1,70 +1,37 @@
-import { nanoid } from "nanoid";
-import { useState } from "react";
+import React from "react";
+import useTaskManager from "./UseTaskManager";
 import "./TaskManager.css";
 
-// TODO: create custom hook to manage task state
-interface Task {
-  id: string;
-  title: string;
-}
 export const TaskManager: React.FC = () => {
-  const [title, setTitle] = useState<string>("");
-  const [searchKeyword, setSearchKeyword] = useState<string>("");
-  const [tasks, setTasks] = useState<Task[]>([]);
-
-  // remove task from list
-  const completeTask = (id: string) : void => {
-    setTasks(tasks.filter((task) => task.id !== id));
-  };
-
-  const updateTask = (id: string, taskUpdate: Partial<Task>): void => {
-    const newTasks = tasks.slice();
-
-    const index = tasks.findIndex((task) => task.id === id);
-
-    newTasks[index] = { ...newTasks[index], ...taskUpdate };
-
-    setTasks(newTasks);
-  };
-
-  const addTask = () => {
-    if (title.length < 1) {
-      return;
-    }
-
-    const newTask = {
-      id: nanoid(),
-      title,
-    };
-    setTasks((prev) => [...prev, newTask]);
-    setTitle("");
-  };
-
-  const handleSearch = (ev: React.ChangeEvent<HTMLInputElement>): void => {
-    setSearchKeyword(ev.target.value);
-  };
-
-  const filteredTasks = tasks.filter((task) =>
-    task.title.toLowerCase().includes(searchKeyword.toLowerCase()),
-  );
+  const {
+    title,
+    searchKeyword,
+    setTitle,
+    setSearchKeyword,
+    addTask,
+    completeTask,
+    updateTask,
+    filteredTasks,
+  } = useTaskManager();
 
   return (
     <div className="container">
       <h1>Task Manager</h1>
 
       <div>
-        <input type="text" onChange={handleSearch} placeholder="Search Task" />
+        <input
+          type="text"
+          onChange={(ev) => setSearchKeyword(ev.target.value)}
+          placeholder="Search Task"
+        />
       </div>
 
       <div className="task">
         <input
           type="text"
           value={title}
-          onChange={(ev) => {
-            setTitle(ev.target.value);
-          }}
+          onChange={(ev) => setTitle(ev.target.value)}
         />
-
         <button onClick={addTask}>Add Task</button>
       </div>
 
