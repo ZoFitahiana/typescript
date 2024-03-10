@@ -3,22 +3,26 @@ import { useState } from "react";
 import "./TaskManager.css";
 
 // TODO: create custom hook to manage task state
-export const TaskManager = () => {
-  const [title, setTitle] = useState("");
-  const [searchKeyword, setSearchKeyword] = useState("");
-  const [tasks, setTasks] = useState([]);
+interface Task {
+  id: string;
+  title: string;
+}
+export const TaskManager: React.FC = () => {
+  const [title, setTitle] = useState<string>("");
+  const [searchKeyword, setSearchKeyword] = useState<string>("");
+  const [tasks, setTasks] = useState<Task[]>([]);
 
   // remove task from list
-  const completeTask = (id) => {
+  const completeTask = (id: string) : void => {
     setTasks(tasks.filter((task) => task.id !== id));
   };
 
-  const updateTask = (id, taskUpdate) => {
+  const updateTask = (id: string, taskUpdate: Partial<Task>): void => {
     const newTasks = tasks.slice();
 
     const index = tasks.findIndex((task) => task.id === id);
 
-    newTasks[index] = taskUpdate;
+    newTasks[index] = { ...newTasks[index], ...taskUpdate };
 
     setTasks(newTasks);
   };
@@ -29,15 +33,14 @@ export const TaskManager = () => {
     }
 
     const newTask = {
-      // using nanoid to generate unique id
       id: nanoid(),
       title,
     };
-    setTasks((prev) => prev.concat(newTask));
+    setTasks((prev) => [...prev, newTask]);
     setTitle("");
   };
 
-  const handleSearch = (ev) => {
+  const handleSearch = (ev: React.ChangeEvent<HTMLInputElement>): void => {
     setSearchKeyword(ev.target.value);
   };
 
